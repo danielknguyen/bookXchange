@@ -1,0 +1,38 @@
+{
+  "name": "bookxchange",
+  "version": "1.0.0",
+  "description": "a full stack application allowing users to trade books",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielknguyen/bookXchange.git"
+  },
+  "keywords": [
+    "html5",
+    "css3",
+    "javascript",
+    "jQuery",
+    "mongoDb",
+    "express.js",
+    "node.js"
+  ],
+  "author": "Daniel Nguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danielknguyen/bookXchange/issues"
+  },
+  "homepage": "https://github.com/danielknguyen/bookXchange#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "consolidate": "^0.15.1",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0",
+    "nunjucks": "^3.1.2",
+    "socket.io": "^2.1.0"
+  }
+}
