@@ -1,8 +1,21 @@
 @media only screen and (min-width: 480px) and (max-width: 767px) {
-
+  #navigation-link-container {
+    display: none;
+  }
+  .nav-content-logo {
+    float: left;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .sideNavButton {
+    display: block;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 @media only screen and (min-width: 768px) and (max-width: 991px) {
-
 }
 @media only screen and (min-width: 992px) and (max-width: 1999px) {
 
