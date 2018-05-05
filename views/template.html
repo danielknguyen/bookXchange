@@ -32,7 +32,7 @@
           <div id="navigation-link-container" class="col-xs-3 col-sm-3 col-md-9 col-lg-9 nopaddingPanel">
             <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
               <div class="navigation-content">
-                <a href="/" class="navigation-links">
+                <a href="/books" class="navigation-links">
                   <i class="fa fa-book" aria-hidden="true"></i>
                   <p>Books</p>
                 </a>
@@ -62,37 +62,73 @@
                 </a>
               </div>
             </div>
-            <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
-              <div class="navigation-content">
-                <a href="/" class="navigation-links">
-                  <i class="fa fa-user-plus" aria-hidden="true"></i>
-                  <p>Sign-up</p>
-                </a>
+            {% if user %}
+              <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
+                <div class="navigation-content">
+                  <a href="/settings" class="navigation-links">
+                    <i class="fa fa-cog" aria-hidden="true"></i>
+                    <p>Settings</p>
+                  </a>
+                </div>
               </div>
-            </div>
-            <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
-              <div class="navigation-content">
-                <a href="/" class="navigation-links">
-                  <i class="fa fa-sign-in" aria-hidden="true"></i>
-                  <p>Login</p>
-                </a>
+              <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
+                <div class="navigation-content">
+                  <a href="/logout" class="navigation-links">
+                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                    <p>Logout</p>
+                  </a>
+                </div>
               </div>
-            </div>
+            {% else %}
+              <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
+                <div class="navigation-content">
+                  <a href="/register" class="navigation-links">
+                    <i class="fa fa-user-plus" aria-hidden="true"></i>
+                    <p>Sign-up</p>
+                  </a>
+                </div>
+              </div>
+              <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
+                <div class="navigation-content">
+                  <a href="/login" class="navigation-links">
+                    <i class="fa fa-sign-in" aria-hidden="true"></i>
+                    <p>Login</p>
+                  </a>
+                </div>
+              </div>
+            {% endif %}
           </div>
         </div>
       </div>
       <!-- side navigation -->
       <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn">&times;</a>
-        <a href="#">Books</a>
+        <a href="/books">Books</a>
         <a href="#">Requests</a>
         <a href="#">Trades</a>
         <a href="#">Users</a>
-        <a href="#">Sign-up</a>
-        <a href="#">Login</a>
+        {% if user %}
+          <a href="/Settings">Settings</a>
+          <a href="/logout">Logout</a>
+        {% else %}
+          <a href="/register">Sign-up</a>
+          <a href="/login">Login</a>
+        {% endif %}
       </div>
     </div>
+
+    <!-- if error object has any messages -->
+    {% if error.length > 0 %}
+       <div class="flashMessage alert alert-danger" role="alert">{{ error }}</div>
+    <!-- if success object has any messages -->
+    {% elif success.length > 0 %}
+       <div class="flashMessage alert alert-success" role="alert">{{ success }}</div>
+    {% endif %}
+
     {% block content %}
     {% endblock %}
+    <footer>
+      <p class="developerCopyright">@dannythedeveloper</p>
+    </footer>
   </body>
 </html>

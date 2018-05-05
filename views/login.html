@@ -1,0 +1,50 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-login</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <p class="authenticate-title">Login</p>
+    <div class="container authentication-form-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="row auth-form-row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 nopaddingPanel">
+          <form id="login-form" action="/login" method="post">
+            <div class="form-group row">
+              <label for="Email" class="col-3 col-form-label">
+                Email
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="email" id="login-email" name="loginEmail" placeholder="john-doe@example.com" required>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="Password" class="col-3 col-form-label">
+                Password
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="password" id="login-password" name="loginPassword" placeholder="" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <i class="fa fa-paper-plane" aria-hidden="true"></i>
+              Login
+            </button>
+          </form>
+        </div>
+        <div class="authenticate-fb col-xs-12 col-sm-12 col-md-6 col-lg-6 nopaddingPanel">
+          <div class="fb-icon-button-div col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+              <button class="btn btn-primary fb-icon-btn col-xs-12 col-sm-12 col-md-9 col-lg-9">
+              <i class="fa fa-facebook-official" aria-hidden="true"></i>
+              Register with Facebook
+            </button>
+          </div>
+          <p class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+            <a href="/register">Not registered? Click here to sign-up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

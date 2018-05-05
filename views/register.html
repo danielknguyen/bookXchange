@@ -1,0 +1,81 @@
+{% extends "template.html" %}
+{% block header %}
+  <title>bookXchange-register</title>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+  <p class="authenticate-title">Register for an Account</p>
+  <div class="container authentication-form-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="row auth-form-row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 nopaddingPanel">
+        <form id="register-form" action="/register" method="post">
+          <div class="form-group row">
+            <label for="name" class="col-3 col-form-label">
+              Full Name
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="text" id="form_name" name="form_name" placeholder="John Doe" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="Email" class="col-3 col-form-label">
+              Email
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="email" id="register-email" name="registerEmail" placeholder="john-doe@example.com" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="city" class="col-3 col-form-label">
+              City
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="text" id="form_city" name="formCity" placeholder="San Francisco" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="State" class="col-3 col-form-label">
+              State
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="text" id="form_state" name="formState" placeholder="CA" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="Password" class="col-3 col-form-label">
+              Password
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="password" id="register-password" name="registerPassword" placeholder="" required>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="VerifyPassword" class="col-3 col-form-label">
+              Verify
+            </label>
+            <div class="col-9">
+              <input class="form-control" type="password" id="register-verify-password" name="registerVerifyPw" placeholder="" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <i class="fa fa-paper-plane" aria-hidden="true"></i>
+            Register
+          </button>
+        </form>
+      </div>
+      <div class="authenticate-fb col-xs-12 col-sm-12 col-md-6 col-lg-6 nopaddingPanel">
+        <div class="fb-icon-button-div col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+            <button class="btn btn-primary fb-icon-btn col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <i class="fa fa-facebook-official" aria-hidden="true"></i>
+            Register with Facebook
+          </button>
+        </div>
+        <p class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+          <a href="/login">Already a user? Click here to login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

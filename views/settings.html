@@ -1,0 +1,79 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-settings</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <p class="authenticate-title">Settings</p>
+    <div class="container authentication-form-container col-xs-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="row auth-form-row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          <form id="settings-form" action="/settings" method="post">
+            <div class="form-group row">
+              <label for="user" class="col-3 col-form-label">
+                User
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="text" id="user_id" name="userId" value="{{ user.userId }}" disabled>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="Password" class="col-3 col-form-label">
+                Current Password
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="password" id="change-password" name="changePassword" placeholder="" required>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="Password" class="col-3 col-form-label">
+                New Password
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="password" id="new-password" name="newPassword" placeholder="" required>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="Password" class="col-3 col-form-label">
+                Verify Password
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="password" id="verify-new-password" name="verifyNewPassword" placeholder="" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <i class="fa fa-paper-plane" aria-hidden="true"></i>
+              Save Changes
+            </button>
+          </form>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          <form id="locationForm" action="/settings/location" method="post">
+            <div class="form-group row">
+              <label for="city" class="col-3 col-form-label">
+                City
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="text" id="new_city" name="newCity" placeholder="San Francisco" required>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="State" class="col-3 col-form-label">
+                State
+              </label>
+              <div class="col-9">
+                <input class="form-control" type="text" id="new_state" name="newState" placeholder="CA" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <i class="fa fa-paper-plane" aria-hidden="true"></i>
+              Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
