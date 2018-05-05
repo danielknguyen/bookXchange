@@ -14,4 +14,16 @@
     top: 50%;
     transform: translateY(-50%);
   }
+  .fb-icon-btn {
+    margin: 5px 0;
+  }
+  #locationForm {
+    margin: 10px 0;
+  }
+  .authenticate-title {
+    font-size: 1.5em;
+  }
+  .form-control {
+    letter-spacing: 1px;
+  }
 }

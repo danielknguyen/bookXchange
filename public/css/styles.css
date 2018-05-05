@@ -106,3 +106,25 @@
 .sideNavButton:hover {
   color: #FFFFFF;
 }
+.authentication-form-container {
+  padding: 10px;
+  height: 500px;
+}
+.fb-icon-button-div {
+  text-align: center;
+}
+.authenticate-title {
+  font-size: 2em;
+  letter-spacing: 3px;
+  text-align: center;
+  padding: 15px;
+  background-color: #f1f1f1;
+}
+.form-control {
+  letter-spacing: 2.5px;
+}
+.developerCopyright {
+  text-align: center;
+  bottom: 0;
+  letter-spacing: 2.5px;
+}
