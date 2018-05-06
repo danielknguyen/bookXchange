@@ -128,3 +128,32 @@
   bottom: 0;
   letter-spacing: 2.5px;
 }
+.fullscreen {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  background: #EEEEEE;
+}
+.cover-div {
+  height: 550px;
+  margin: 0 auto;
+  text-align: center;
+}
+.cover-content {
+  padding: 0 15px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+}
+.cover-title {
+  letter-spacing: 2.5px;
+  font-family: 'Pacifico', cursive;
+  font-size: 2em;
+}
+.cover-slogan {
+  letter-spacing: 1.5px;
+}
