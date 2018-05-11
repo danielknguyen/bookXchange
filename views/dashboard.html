@@ -1,0 +1,71 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-books</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="dashboard col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+          <div class="dashboard-content">
+            <p class="dashboard-title">Dashboard</p>
+            <div class="trade-request-buttons">
+              <button class="btn btn-primary col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                <i class="fa fa-exchange" aria-hidden="true"></i>
+                Your trade requests
+              </button>
+              <button class="btn btn-secondary col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                <i class="fa fa-exchange" aria-hidden="true"></i>
+                Trade requests for you
+              </button>
+            </div>
+            <div class="addBooksDiv">
+              <form class="addBookForm" action="dashboard/books/add" method="post">
+                <div class="form-group row">
+                  <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 nopaddingPanel">
+                    <input class="form-control" type="text" name="addBook" placeholder="Eloquent Javascript" required>
+                  </div>
+                  <button type="submit" class="btn btn-success col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    Add Book
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div class="myBooksContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {% for book in books %}
+                <div class="myBooksDiv">
+                  <p class="bookTitle">{{ book.title }}: <span class="bookSubTitle">{{ book.subtitle }}</span></p>
+                  <div class="bookImg col-xs-12 col-sm-12 col-md-2 col-lg-2 nopaddingPanel">
+                    <a href="{{ book.link }}" target="_blank">
+                      <img src="{{ book.thumbnail }}" alt="book_img">
+                    </a>
+                  </div>
+                  <div class="bookContentDiv col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                    <div class="bookContent col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+                      {% for author in book.authors  %}
+                        <p style="display: inline-block">{{ author }}</p>
+                      {% endfor %}
+                      <p>{{ book.publisher }}, {{ book.publishedDate }}</p>
+                      <p>from {{ user.name }} in {{ user.location }}</p>
+                    </div>
+                  </div>
+                  <div class="requestsMade col-xs-12 col-sm-12 col-md-2 col-lg-2">
+                    <div class="requestCountDiv">
+                      <p>Requests <span class="reqCount">3</span></p>
+                      <p>(daniel)</p>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <p class="noBooks">No books at this time</p>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
