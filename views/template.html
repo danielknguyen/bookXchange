@@ -30,6 +30,16 @@
             </div>
           </div>
           <div id="navigation-link-container" class="col-xs-3 col-sm-3 col-md-9 col-lg-9 nopaddingPanel">
+            {% if user %}
+              <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
+                <div class="navigation-content">
+                  <a href="/dashboard" class="navigation-links">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    <p>Dashboard</p>
+                  </a>
+                </div>
+              </div>
+            {% endif %}
             <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
               <div class="navigation-content">
                 <a href="/books" class="navigation-links">
@@ -40,7 +50,7 @@
             </div>
             <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
               <div class="navigation-content">
-                <a href="/" class="navigation-links">
+                <a href="/requests" class="navigation-links">
                   <i class="fa fa-bandcamp" aria-hidden="true"></i>
                   <p>Requests</p>
                 </a>
@@ -48,15 +58,7 @@
             </div>
             <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
               <div class="navigation-content">
-                <a href="/" class="navigation-links">
-                  <i class="fa fa-exchange" aria-hidden="true"></i>
-                  <p>Trades</p>
-                </a>
-              </div>
-            </div>
-            <div class="navigation-div col-xs-12 col-sm-2 col-md-2 col-lg-2 nopaddingPanel">
-              <div class="navigation-content">
-                <a href="/" class="navigation-links">
+                <a href="/users" class="navigation-links">
                   <i class="fa fa-users" aria-hidden="true"></i>
                   <p>Users</p>
                 </a>
@@ -103,10 +105,10 @@
       <!-- side navigation -->
       <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn">&times;</a>
+        <a href="/dashboard">Dashboard</a>
         <a href="/books">Books</a>
-        <a href="#">Requests</a>
-        <a href="#">Trades</a>
-        <a href="#">Users</a>
+        <a href="/requests">Requests</a>
+        <a href="/users">Users</a>
         {% if user %}
           <a href="/Settings">Settings</a>
           <a href="/logout">Logout</a>
@@ -127,8 +129,5 @@
 
     {% block content %}
     {% endblock %}
-    <footer>
-      <p class="developerCopyright">@dannythedeveloper</p>
-    </footer>
   </body>
 </html>
