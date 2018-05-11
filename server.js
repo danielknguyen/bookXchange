@@ -6,6 +6,7 @@ var express = require('express'),
     flash = require('connect-flash'),
     morgan = require('morgan'),
     socket = require('socket.io'),
+    books = require('google-books-search'),
     mongoose = require('mongoose'),
     session = require('express-session'),
     MongoStore = require('connect-mongo')(session),
@@ -15,6 +16,7 @@ var express = require('express'),
 var db = require('./libs/db.js');
 // load user module
 var User = require('./models/userSchema.js');
+var Book = require('./models/bookSchema.js');
 
 // app configuration
 var appConfig = function() {
@@ -38,8 +40,8 @@ app.use(session({
   }),
   cookie: {
    secure: false,
-   // 5min in milli
-   maxAge: 300000
+   // 30 min in milli
+   maxAge: 1800000
   }
 }));
 
@@ -59,7 +61,8 @@ app.use(function(req, res, next) {
       if (user) {
         req.session.user = {
           name: user.name,
-          userId: user._id
+          userId: user._id,
+          location: user.city + ', ' + user.state 
         };
       } else {
         req.session.user = undefined;
@@ -82,4 +85,4 @@ var server = app.listen(port, function() {
 var io = socket(server);
 
 // load routes module
-var routes = require('./routes/routes.js')(app, User);
+var routes = require('./routes/routes.js')(app, User, books, Book);
