@@ -1,4 +1,4 @@
-var routes = function(app, User) {
+var routes = function(app, User, books, Book) {
 
   var bcrypt = require('bcrypt-nodejs');
 
@@ -58,7 +58,8 @@ var routes = function(app, User) {
 
           req.session.user = {
             name: user.name,
-            userId: user._id
+            userId: user._id,
+            location: user.city + ', ' + user.state
           };
 
           console.log('New user has been registered ', user);
@@ -110,11 +111,12 @@ var routes = function(app, User) {
 
             req.session.user = {
               name: person.name,
-              userId: person._id
+              userId: person._id,
+              location: user.city + ', ' + user.state
             };
 
             req.flash('success', 'You are logged in');
-            res.redirect('/books');
+            res.redirect('/dashboard');
             // if password incorrect redirect back to login and display error message
           } else {
             req.flash('error', 'Password incorrect');
@@ -207,6 +209,113 @@ var routes = function(app, User) {
       };
     });
   });
+  app.get('/dashboard', isLoggedIn, function(req, res) {
+    Book.find({}, function(err, results) {
+      if (err) {
+        console.log(err);
+      }
+      if (results) {
+        console.log('list of my books: ', results);
+        res.render('dashboard.html', {
+          user: req.session.user,
+          books: results,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      } else {
+        res.render('dashboard.html', {
+          user: req.session.user,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      };
+    });
+  });
+  app.post('/dashboard/books/add', function(req, res) {
+    var newBook = Book();
+    var book = req.body.addBook;
+
+    var promise1 = new Promise(function(resolve, reject) {
+      books.search(book, function(error, results) {
+        if (!error) {
+          // console.log('book search: ',results[0]);
+          resolve(results[0]);
+        } else {
+          console.log(error);
+          reject(error);
+        };
+      });
+    });
+
+    var promise2 = new Promise(function(resolve,reject) {
+      promise1.then(function isOk(result) {
+        // console.log('this is the result to promise 2: ', result)
+        resolve(result);
+      }).catch(function notOk(err) {
+        reject(err);
+      });
+    });
+
+    promise2.then(function isOk(result) {
+      Book.findOne( { "title": book }, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        if (!data) {
+          // console.log("this is what you'll add: ", result);
+          var title = result.title;
+          var subtitle = result.subtitle;
+          var authors = [];
+          for (var i = 0; i < result.authors.length; i++) {
+            authors.push(result.authors[i]);
+          };
+          var publisher = result.publisher;
+          var publishedDate = result.publishedDate;
+          var link = result.link;
+          var thumbnail = result.thumbnail;
+
+          newBook.user_id = req.session.user.userId;
+          newBook.title = title;
+          newBook.subtitle = subtitle;
+          newBook.authors = authors;
+          newBook.publisher = publisher;
+          newBook.publishedDate = publishedDate;
+          newBook.link = link;
+          newBook.thumbnail = thumbnail;
+          // console.log(newBook);
+
+          newBook.save(function(err, save) {
+            if (err) {
+              console.log(err);
+            }
+            console.log('successfully added: ', save);
+          });
+          req.flash('success', 'Book successfully added');
+          res.redirect('/dashboard');
+        } else {
+          req.flash('error', 'Book already added');
+          res.redirect('/dashboard');
+        };
+      });
+    }).catch(function notOk(err) {
+      req.flash('error', 'Book does not exist');
+      res.redirect('/dashboard');
+    });
+  });
+  app.get('/requests', function(req, res) {
+    res.render('requests.html', {
+      user: req.session.user,
+      error_message: req.flash('error'),
+      success_message: req.flash('success')
+    });
+  });
+  app.get('/users', function(req, res) {
+    res.render('users.html', {
+      user: req.session.user,
+      error_message: req.flash('error'),
+      success_message: req.flash('success')
+    });
+  });
 };
 // middleware to check if user is logged in
 var isLoggedIn = function(req, res, next) {
@@ -214,7 +323,7 @@ var isLoggedIn = function(req, res, next) {
     return next();
   } else {
     req.flash('error', 'Login required');
-    res.redirect('/register');
+    res.redirect('/login');
   }
 };
 // middleware to title case string
