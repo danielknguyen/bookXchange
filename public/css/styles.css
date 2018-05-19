@@ -110,9 +110,6 @@
   padding: 10px;
   height: 500px;
 }
-.fb-icon-button-div {
-  text-align: center;
-}
 .authenticate-title {
   font-size: 2em;
   letter-spacing: 3px;
@@ -156,12 +153,12 @@
 .cover-slogan {
   letter-spacing: 1.5px;
 }
-.dashboard {
-  background-color: #f1f1f1;
-}
-.trade-request-buttons {
+.dashboard-buttons {
   text-align: center;
   padding: 15px;
+}
+#dash-myBook-btn {
+  text-decoration: none;
 }
 .dashboard-title {
   letter-spacing: 2.5px;
@@ -170,38 +167,27 @@
   text-align: center;
   padding-top: 15px;
 }
-.addBooksDiv {
+.searchBarDiv {
   padding: 15px;
   margin: 0 15px;
 }
-.myBooksDiv {
-  border: 1px solid #000000;
-  padding: 15px;
-  width: 100%;
-  display: inline-block;
+.searchedBooksDiv, .myBooksContainer {
+  text-align: center;
 }
-.bookImg {;
-  float: left;
+.search-img, .myBook-img {
+  padding: 10px;
+  cursor: pointer;
 }
 .bookContentDiv {
   display: inline-block;
 }
-.requestsMade {
-  float: right;
-}
-.reqCount {
-  height: 25px;
-  width: 25px;
-  text-align: center;
-  border-radius: 50%;
-  display: inline-block;
-  color:#fff;
-  background-color: grey;
-}
-.bookTitle {
-  font-size: 1.5em;
-}
 .bookSubTitle {
   font-style: italic;
   font-size: .8em;
+}
+.myBooksDiv {
+  padding: 15px;
+}
+button[name="back-btn"] {
+  margin: 15px;
 }
