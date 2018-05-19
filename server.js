@@ -62,7 +62,7 @@ app.use(function(req, res, next) {
         req.session.user = {
           name: user.name,
           userId: user._id,
-          location: user.city + ', ' + user.state 
+          location: user.city + ', ' + user.state
         };
       } else {
         req.session.user = undefined;
