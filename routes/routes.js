@@ -210,96 +210,174 @@ var routes = function(app, User, books, Book) {
     });
   });
   app.get('/dashboard', isLoggedIn, function(req, res) {
-    Book.find({}, function(err, results) {
+    var myBooksCount;
+    var yourTradeReqCount;
+    var tradeRequestToYouCount;
+
+    Book.find({ 'user_id': req.session.user.userId }, function(err, data) {
       if (err) {
         console.log(err);
-      }
-      if (results) {
-        console.log('list of my books: ', results);
+      };
+      if (data.length === 0) {
+        myBooksCount = 0;
+        req.session.myBooksCount = 0;
         res.render('dashboard.html', {
           user: req.session.user,
-          books: results,
+          books: [],
+          my_books_count: myBooksCount,
           error_message: req.flash('error'),
           success_message: req.flash('success')
         });
       } else {
+        myBooksCount = data.length;
+        req.session.myBooksCount = data.length;
         res.render('dashboard.html', {
           user: req.session.user,
+          books: [],
+          my_books_count: myBooksCount,
           error_message: req.flash('error'),
           success_message: req.flash('success')
         });
       };
     });
+
   });
-  app.post('/dashboard/books/add', function(req, res) {
+  app.post('/dashboard', isLoggedIn, function(req, res) {
     var newBook = Book();
-    var book = req.body.addBook;
+    var book = req.body.searchBook;
 
+    books.search(book, function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+
+      if (results.length !== 0) {
+        req.session.book = book;
+        res.render('dashboard.html', {
+          user: req.session.user,
+          books: results,
+          my_books_count: req.session.myBooksCount,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      } else {
+        req.flash('error', 'Books not found');
+        res.redirect('/dashboard');
+      };
+    });
+  });
+  app.get('/dashboard/mybooks', isLoggedIn, function(req, res) {
+
+    Book.find({ 'user_id': req.session.user.userId }, function(err, books) {
+      if (err) {
+        console.log(err);
+      };
+      if (books.length !== 0) {
+        res.render('myBooks.html', {
+          user: req.session.user,
+          myBooks: books,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      } else {
+        res.render('myBooks.html', {
+          user: req.session.user,
+          myBooks:[],
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      }
+    });
+  });
+  app.post('/dashboard/add/:volume_id', function(req, res) {
+    var volume_id = req.params.volume_id;
+    // console.log(volume_id);
+    // check first if book exists in library
     var promise1 = new Promise(function(resolve, reject) {
-      books.search(book, function(error, results) {
-        if (!error) {
-          // console.log('book search: ',results[0]);
-          resolve(results[0]);
-        } else {
-          console.log(error);
-          reject(error);
-        };
-      });
-    });
-
-    var promise2 = new Promise(function(resolve,reject) {
-      promise1.then(function isOk(result) {
-        // console.log('this is the result to promise 2: ', result)
-        resolve(result);
-      }).catch(function notOk(err) {
-        reject(err);
-      });
-    });
-
-    promise2.then(function isOk(result) {
-      Book.findOne( { "title": book }, function(err, data) {
+      Book.findOne( { "volume_id": volume_id }, function(err, data) {
         if (err) {
           console.log(err);
         };
+        // if no data exist accept
         if (!data) {
-          // console.log("this is what you'll add: ", result);
-          var title = result.title;
-          var subtitle = result.subtitle;
+          resolve(data);
+        // if book exist in database reject
+        } else {
+          reject(data);
+        };
+      });
+    });
+    // add book to database if does not exist
+    promise1.then(function isOk(err, results) {
+      if (err) {
+        console.log(err);
+      };
+      // console.log('this is the results ', results);
+      books.lookup(volume_id, function(error, data) {
+        if (error) {
+          console.log(error);
+        }
+
+        if (data.length !== 0) {
+          // console.log(data);
+          var title = data.title;
+          var subtitle = data.subtitle;
           var authors = [];
-          for (var i = 0; i < result.authors.length; i++) {
-            authors.push(result.authors[i]);
+          for (var i = 0; i < data.authors.length; i++) {
+            authors.push(data.authors[i]);
           };
-          var publisher = result.publisher;
-          var publishedDate = result.publishedDate;
-          var link = result.link;
-          var thumbnail = result.thumbnail;
+          var publisher = data.publisher;
+          var publishedDate = data.publishedDate;
+          var link = data.link;
+          var thumbnail = data.thumbnail;
+          var description = data.description;
 
-          newBook.user_id = req.session.user.userId;
-          newBook.title = title;
-          newBook.subtitle = subtitle;
-          newBook.authors = authors;
-          newBook.publisher = publisher;
-          newBook.publishedDate = publishedDate;
-          newBook.link = link;
-          newBook.thumbnail = thumbnail;
-          // console.log(newBook);
-
-          newBook.save(function(err, save) {
+          var book = new Book({
+            user_id: req.session.user.userId,
+            volume_id: data.id,
+            title: title,
+            authors: authors,
+            publisher: publisher,
+            publishedDate: publishedDate,
+            link: link,
+            thumbnail: thumbnail,
+            description: description
+          });
+          // save book in database
+          book.save(function(err, book) {
             if (err) {
               console.log(err);
-            }
-            console.log('successfully added: ', save);
+            };
+            console.log('Successfully saved ', book);
           });
-          req.flash('success', 'Book successfully added');
-          res.redirect('/dashboard');
+          // console.log('this is the book being added ', book);
+          req.flash('success', book.title + ' has been added to your library');
+          res.redirect('/dashboard/mybooks');
         } else {
-          req.flash('error', 'Book already added');
+          req.flash('error', 'Book not found');
           res.redirect('/dashboard');
         };
       });
     }).catch(function notOk(err) {
-      req.flash('error', 'Book does not exist');
+      console.log(err);
+      req.flash('error', 'An error occured or book already exists in library');
       res.redirect('/dashboard');
+    });
+  });
+  app.post('/dashboard/remove/:volume_id', function(req, res) {
+    var volume_id = req.params.volume_id;
+    Book.findOneAndRemove({
+      $and: [
+        { 'user_id': req.session.user.userId },
+        { 'volume_id': volume_id}
+      ]
+    }, function(err, book) {
+      if (err) {
+        console.log(err);
+      };
+      // console.log(book.title + ' was deleted');
+      req.flash('success', book.title + ' was deleted');
+      res.redirect('/dashboard/mybooks');
     });
   });
   app.get('/requests', function(req, res) {
