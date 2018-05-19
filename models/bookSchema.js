@@ -14,6 +14,11 @@ var bookSchema = new Schema({
     required: true,
     trim: true
   },
+  volume_id: {
+    type: String,
+    required: true,
+    trim: true
+  },
   title: {
     type: String,
     unique: true,
@@ -22,28 +27,27 @@ var bookSchema = new Schema({
   },
   subtitle: {
     type: String,
-    required: true,
     trim: true
   },
   authors: [],
   publisher: {
     type: String,
-    required: true,
     trim: true
   },
   publishedDate: {
     type: String,
-    required: true,
     trim: true
   },
   link: {
     type: String,
-    required: true,
     trim: true
   },
   thumbnail: {
     type: String,
-    required: true,
+    trim: true
+  },
+  description: {
+    type: String,
     trim: true
   }
 });
