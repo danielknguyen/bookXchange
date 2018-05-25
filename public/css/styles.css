@@ -157,7 +157,7 @@
   text-align: center;
   padding: 15px;
 }
-#dash-myBook-btn {
+#dash-myBook-btn, #dash-yourTradeReq-btn, #dash-tradeReqToyou-btn {
   text-decoration: none;
 }
 .dashboard-title {
@@ -171,10 +171,10 @@
   padding: 15px;
   margin: 0 15px;
 }
-.searchedBooksDiv, .myBooksContainer {
+.searchedBooksDiv, .myBooksContainer, .allBooksContainer {
   text-align: center;
 }
-.search-img, .myBook-img {
+.search-img, .myBook-img, .allBook-img {
   padding: 10px;
   cursor: pointer;
 }
@@ -190,4 +190,11 @@
 }
 button[name="back-btn"] {
   margin: 15px;
+}
+.requestContent, .myrequest-content, .requestForYou-content {
+  text-align: center;
+  padding: 15px;
+}
+.my-request-td, .request-for-you-td {
+  padding: 2px;
 }
