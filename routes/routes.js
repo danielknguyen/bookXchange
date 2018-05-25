@@ -1,4 +1,4 @@
-var routes = function(app, User, books, Book) {
+var routes = function(app, User, books, Book, Request) {
 
   var bcrypt = require('bcrypt-nodejs');
 
@@ -22,9 +22,9 @@ var routes = function(app, User, books, Book) {
     var email = req.body.registerEmail.toLowerCase();
     var password = req.body.registerPassword;
     var verifyPassword = req.body.registerVerifyPw;
-    var name = req.body.form_name.toLowerCase();
-    var city = req.body.form_city.toLowerCase();
-    var state = req.body.form_state.toUpperCase();
+    var name = req.body.formName.toLowerCase();
+    var city = req.body.formCity.toLowerCase();
+    var state = req.body.formState.toUpperCase();
     // console.log('email, password, verifyPw: ', email, password, verifyPassword);
 
     // instantiate new user object
@@ -64,7 +64,7 @@ var routes = function(app, User, books, Book) {
 
           console.log('New user has been registered ', user);
           req.flash('success', 'Successfully logged in!');
-          res.redirect('/books');
+          res.redirect('/dashboard');
         };
       } else {
         // user exists
@@ -127,11 +127,70 @@ var routes = function(app, User, books, Book) {
     });
   });
   app.get('/books', function(req, res) {
-    res.render('books.html', {
-      user: req.session.user,
-      error_message: req.flash('error'),
-      success_message: req.flash('success')
-    });
+    var promise;
+    if (req.session.user) {
+      promise = new Promise(function(resolve, reject) {
+        Book.find({ 'user_id': { $ne: req.session.user.userId } }, function(err, data) {
+          if (err) {
+            console.log(err);
+          };
+          resolve(data);
+        });
+      });
+
+      promise.then(function isOk(results) {
+        Request.find({ 'user_id': req.session.user.userId }, function(err, request) {
+          if (err) {
+            console.log(err);
+          };
+          var new_data = [];
+          for (var i = 0; i < results.length; i++) {
+            var s = false;
+            for (var j = 0; j < request.length; j++) {
+              if (results[i]._id == request[j].book_id) {
+                s = true;
+              };
+            };
+            if (s === false) {
+              results[i].already_requested = 'false';
+              new_data.push(results[i]);
+            } else {
+              results[i].already_requested = 'true';
+              new_data.push(results[i]);
+            };
+          };
+          res.render('books.html', {
+            user: req.session.user,
+            allBooks: results,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
+        });
+      });
+    } else {
+      promise = new Promise(function(resolve, reject) {
+        Book.find({}, function(err, data) {
+          if (err) {
+            console.log(err);
+          };
+          resolve(data);
+        });
+      });
+
+      promise.then(function isOk(data) {
+        Request.find({ 'user_id': req.session.user.userId }, function(err, request) {
+          if (err) {
+            console.log(err);
+          };
+          res.render('books.html', {
+            allBooks: data,
+            requests: request,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
+        });
+      });
+    };
   });
   app.get('/settings', isLoggedIn, function(req, res) {
     res.render('settings.html', {
@@ -140,7 +199,7 @@ var routes = function(app, User, books, Book) {
       success_message: req.flash('success')
     });
   });
-  app.post('/settings', function(req, res) {
+  app.post('/settings', isLoggedIn, function(req, res) {
     var user = new User();
     var userId = req.session.user.userId;
     var currentPassword = req.body.changePassword;
@@ -179,7 +238,7 @@ var routes = function(app, User, books, Book) {
       };
     });
   });
-  app.post('/settings/location', function(req, res) {
+  app.post('/settings/location', isLoggedIn, function(req, res) {
     var userId = req.session.user.userId;
     var city = req.body.newCity.toLowerCase();
     var state = req.body.newState.toUpperCase();
@@ -214,33 +273,46 @@ var routes = function(app, User, books, Book) {
     var yourTradeReqCount;
     var tradeRequestToYouCount;
 
-    Book.find({ 'user_id': req.session.user.userId }, function(err, data) {
-      if (err) {
-        console.log(err);
-      };
-      if (data.length === 0) {
-        myBooksCount = 0;
-        req.session.myBooksCount = 0;
-        res.render('dashboard.html', {
-          user: req.session.user,
-          books: [],
-          my_books_count: myBooksCount,
-          error_message: req.flash('error'),
-          success_message: req.flash('success')
-        });
-      } else {
+    var promise = new Promise(function(resolve, reject) {
+      Book.find({ 'user_id': req.session.user.userId }, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
         myBooksCount = data.length;
         req.session.myBooksCount = data.length;
+        resolve(myBooksCount);
+      });
+    });
+
+    promise.then(function isOk(myBooksCount) {
+      Request.find({ 'user_id': req.session.user.userId }, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        // console.log('requestslength ',data.length);
+        yourTradeReqCount = data.length;
+        req.session.yourTradeReqCount = data.length;
+      });
+    }).then(function() {
+      Request.find({ 'ownerId': req.session.user.userId }, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        tradeRequestToYouCount = data.length;
+        req.session.tradeRequestToYouCount = data.length;
+        // console.log('my books count and trade req count ', myBooksCount, yourTradeReqCount);
+        // console.log('this is the trade request count to you ', tradeRequestToYouCount);
+
         res.render('dashboard.html', {
           user: req.session.user,
-          books: [],
           my_books_count: myBooksCount,
+          yourTradeReqCount: yourTradeReqCount,
+          trade_requests_to_you_count: tradeRequestToYouCount,
           error_message: req.flash('error'),
           success_message: req.flash('success')
         });
-      };
+      });
     });
-
   });
   app.post('/dashboard', isLoggedIn, function(req, res) {
     var newBook = Book();
@@ -289,7 +361,7 @@ var routes = function(app, User, books, Book) {
       }
     });
   });
-  app.post('/dashboard/add/:volume_id', function(req, res) {
+  app.post('/dashboard/add/:volume_id', isLoggedIn, function(req, res) {
     var volume_id = req.params.volume_id;
     // console.log(volume_id);
     // check first if book exists in library
@@ -364,7 +436,7 @@ var routes = function(app, User, books, Book) {
       res.redirect('/dashboard');
     });
   });
-  app.post('/dashboard/remove/:volume_id', function(req, res) {
+  app.post('/dashboard/remove/:volume_id', isLoggedIn, function(req, res) {
     var volume_id = req.params.volume_id;
     Book.findOneAndRemove({
       $and: [
@@ -385,6 +457,229 @@ var routes = function(app, User, books, Book) {
       user: req.session.user,
       error_message: req.flash('error'),
       success_message: req.flash('success')
+    });
+  });
+  app.get('/requests/new/give/for/:book_id', isLoggedIn, function(req, res) {
+    var request_id = req.params.book_id;
+    var promise = new Promise(function(resolve, reject) {
+      Book.find({ 'user_id': req.session.user.userId }, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        resolve(data);
+      });
+    });
+
+    promise.then(function isOk(results) {
+      var data = [];
+      if (results.length !== 0) {
+        Request.find({ 'user_id': req.session.user.userId }, function(err, requests) {
+          if (err) {
+            console.log(err);
+          };
+          var data = [];
+          for (var i = 0; i < results.length; i++) {
+            var s = false;
+            for (var j = 0; j < requests.length; j++) {
+              if (results[i]._id == requests[j].book_id_to_give) {
+                console.log('book-id and book_id_to_give ', results[i]._id, requests[j].book_id_to_give);
+                s = true;
+                break;
+              };
+            };
+            if (s === false) {
+              console.log('data pushing ', results[i]);
+              data.push(results[i]);
+            };
+          };
+          res.render('give.html', {
+            user: req.session.user,
+            results: data,
+            request_id: request_id,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
+        });
+      } else {
+        res.render('give.html', {
+          user: req.session.user,
+          results: data,
+          request_id: request_id,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      };
+    });
+  });
+  app.post('/requests/new/give/:request_id/:book_id', function(req, res) {
+    var request_id = req.params.request_id;
+    var book_id = req.params.book_id;
+
+    var promise1 = new Promise(function(resolve, reject) {
+      Book.findOne({ '_id': book_id }, function(err, book) {
+        if (err) {
+          console.log(err);
+        };
+        if (book.length !== 0) {
+          resolve(book);
+        } else {
+          reject(book);
+        };
+      });
+    });
+
+    promise1.then(function isOk(book) {
+
+      Request.update({ '_id': request_id }, {
+        'book_id_to_give': book._id,
+        'title_to_give': book.title,
+        'status': 'Pending'
+      },
+      function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        // console.log('this is the data ', data);
+        req.flash('success', book.title + ' was selected to offer for trade');
+        res.redirect('/dashboard/myrequests');
+      });
+    }).catch(function notOk(err) {
+      console.log(err);
+    });
+  });
+  app.get('/requests/new/:request_id', isLoggedIn, function(req, res) {
+    var newRequest = Request();
+    var request_id = req.params.request_id;
+    // console.log('request id ', request_id);
+    var step1 = new Promise(function(resolve, reject) {
+      Book.find({ '_id': request_id }, function(err, book) {
+        if (err) {
+          console.log(err);
+        };
+        if (book) {
+          resolve(book);
+        } else {
+          reject(book);
+        };
+      });
+    });
+
+    step1.then(function isOk(data) {
+      // console.log('this is the book data you want to trade ', data);
+      // console.log(data[0]);
+      User.findOne({ '_id': data[0].user_id }, function(err, user) {
+        if (err) {
+          console.log(err);
+        };
+        if (user) {
+          var user_data = {
+            name: user.name,
+            location: user.city + ', ' + user.state
+          };
+          res.render('requestsNew.html', {
+            user: req.session.user,
+            trade_data: data[0],
+            trade_user: user_data,
+            book_id: request_id,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
+        } else {
+          console.log(err);
+          res.render('requestsNew.html', {
+            user: req.session.user,
+            trade_data: [],
+            trade_user: [],
+            book_id: request_id,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
+        }
+      });
+    }).catch(function notOk(err) {
+      console.log(err);
+    });
+  });
+  app.post('/requests/new/:book_id', isLoggedIn, function(req, res) {
+    var newRequest = Request();
+    var book_id = req.params.book_id;
+    // console.log('book id ', book_id);
+    var step1 = new Promise(function(resolve, reject) {
+      Book.find({ '_id': book_id }, function(err, book) {
+        if (err) {
+          console.log(err);
+        };
+        if (book) {
+          resolve(book);
+        } else {
+          reject(book);
+        };
+      });
+    });
+
+    step1.then(function isOk(data) {
+      // console.log('this is the book data you want to trade ', data);
+      // console.log(data[0]);
+      newRequest.user_id = req.session.user.userId;
+      newRequest.title = data[0].title;
+      newRequest.ownerId = data[0].user_id;
+      newRequest.book_id = data[0]._id;
+      newRequest.status = 'In progress';
+      User.findOne({ '_id': data[0].user_id }, function(err, user) {
+        if (err) {
+          console.log(err);
+        };
+        if (user) {
+          newRequest.owner = user.name;
+          // console.log(newRequest);
+          newRequest.save(function(err, savedData) {
+            if (err) {
+              console.log(err);
+            };
+            req.flash('success','Select a book to trade for ' + data[0].title);
+            res.redirect('/requests/new/give/for/' + savedData._id);
+          });
+        } else {
+          console.log(err);
+          res.redirect('/books');
+        };
+      });
+    }).catch(function notOk(err) {
+      console.log(err);
+    });
+  });
+  app.get('/dashboard/myrequests', isLoggedIn, function(req, res) {
+    Request.find({ 'user_id': req.session.user.userId }, function(err, requests) {
+      // console.log(requests);
+      res.render('myrequests.html', {
+        user: req.session.user,
+        request_data: requests,
+        error_message: req.flash('error'),
+        success_message: req.flash('success')
+      });
+    });
+  });
+  app.get('/dashboard/myrequests/:request_id', isLoggedIn, function(req, res) {
+    var request_id = req.params.request_id;
+    Request.find({ '_id': request_id }, function(err, request) {
+      if (err) {
+        console.log(err);
+      }
+      res.render('singlerequest.html', {
+        user: req.session.user,
+        request_data: request,
+        error_message: req.flash('error'),
+        success_message: req.flash('success')
+      });
+    });
+  });
+  app.post('/dashboard/myrequests/delete/:request_id', isLoggedIn, function(req, res) {
+    Request.findOneAndRemove({ '_id': req.params.request_id }, function(err, results) {
+      if (err) {
+        console.log(err);
+      };
+      req.flash('success', results.title + ' was removed from your request list');
+      res.redirect('/dashboard/myrequests');
     });
   });
   app.get('/users', function(req, res) {
