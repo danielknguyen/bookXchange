@@ -18,14 +18,18 @@
                   <span>({{ my_books_count }})</span>
                 </button>
               </a>
-              <button id="dash-yourTradeReq-btn" class="btn btn-primary col-xs-12 col-sm-12 col-md-12 col-lg-3">
-                Your trade requests
-                <span>({{ your_trade_request_count }})</span>
-              </button>
-              <button id="dash-tradeReqToyou-btn"class="btn btn-secondary col-xs-12 col-sm-12 col-md-12 col-lg-3">
-                Trade requests for you
-                <span>({{ trade_requests_to_you_count }})</span>
-              </button>
+              <a id="dash-yourTradeReq-btn" href="/dashboard/myrequests">
+                <button class="btn btn-primary col-xs-12 col-sm-12 col-md-12 col-lg-3">
+                  Your trade requests
+                  <span>({{ yourTradeReqCount }})</span>
+                </button>
+              </a>
+              <a id="dash-tradeReqToyou-btn" href="">
+                <button class="btn btn-secondary col-xs-12 col-sm-12 col-md-12 col-lg-3">
+                  Trade requests to you
+                  <span>({{ trade_requests_to_you_count }})</span>
+                </button>
+              </a>
             </div>
             <div class="searchBarDiv">
               <form class="searchBookForm" action="dashboard" method="post">

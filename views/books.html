@@ -9,7 +9,75 @@
     <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
       <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
         <div class="allbooks col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+          <div class="dashboard-content">
+            <p class="dashboard-title">All Books for Trade</p>
+          </div>
+          <!-- books div -->
+          <div class="allBooksContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="allBooksDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {% if allBooks.length !== 0 %}
+                {% for book in allBooks %}
+                  <!-- Button to Open the Modal -->
+                  <img class="allBook-img" src="{{ book.thumbnail }}" alt="book_img" style="display:inline-block;" data-toggle="modal" data-target="#{{ book._id }}">
 
+                  <!-- The Modal -->
+                  <div class="modal" id="{{ book._id }}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                          <h4 class="modal-title">{{ book.title }}: <span class="bookSubTitle">{{ book.subtitle }}</span></h4>
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <a href="{{ book.link }}" target="_blank">
+                              <img src="{{ book.thumbnail }}" alt="book_img">
+                            </a>
+                            <div class="modal-authors">
+                              <p><b>Authors:</b></p>
+                              {% for author in book.authors  %}
+                                <p>{{ author }}</p>
+                              {% endfor %}
+                            </div>
+                            <p><b>Publisher:</b></p>
+                            <p>{{ book.publisher }}</p>
+                            <p><b>Published:</b></p>
+                            <p>{{ book.publishedDate }}</p>
+                          </div>
+                          <a href="{{ book.link }}" target="_blank">Read more...</a>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                          {% if user %}
+                              {% if book.already_requested === 'false' %}
+
+                                <form class="" action="/requests/new/{{ book._id }}" method="get">
+                                  <button type="submit" class="btn btn-success">Request for Trade</button>
+                                </form>
+                              {% elif book.already_requested === 'true' %}
+                                <button class="btn btn-success" disabled>Already requested</button>
+                              {% endif %}
+                          {% else %}
+                            <a href="/login">
+                              <button type="submit" class="btn btn-success">Login to Request for Trade</button>
+                            </a>
+                          {% endif %}
+                          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p style="color: red">*No books in currently for trade*</p>
+              {% endif %}
+            </div>
+          </div>
         </div>
       </div>
     </div>

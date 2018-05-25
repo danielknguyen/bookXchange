@@ -1,0 +1,51 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-give</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="requestsDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <p class="dashboard-title">Offer Book to Trade with</p>
+          <a href="/dashboard/myrequests">
+            <button type="button" class="btn btn-info" name="back-btn">Back</button>
+          </a>
+          <div class="myrequest-content">
+            <table width="100%">
+              <tr style="border-bottom: 1px solid black">
+                <th>Book</th>
+                <th>Author</th>
+                <th>Owner</th>
+                <th></th>
+              </tr>
+              {% if results.length !== 0 %}
+                {% for book in results %}
+                  <tr style="border-bottom: 1px solid #f1f1f1">
+                    <td>{{ book.title }}</td>
+                    <td>
+                      {% for author in book.authors  %}
+                        <p>{{ author }}</p>
+                      {% endfor %}
+                    </td>
+                    <td>{{ user.name }}</td>
+                    <td>
+                      <form class="" action="/requests/new/give/{{ request_id }}/{{ book._id }}" method="post" style="display: inline-block">
+                        <button type="submit" class="btn btn-sm btn-success">Make request</button>
+                      </form>
+                      <form class="" action="/dashboard/myrequests/delete/{{ request_id }}" method="post" style="display: inline-block">
+                        <button type="" class="btn btn-sm btn-danger">Cancel Request</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

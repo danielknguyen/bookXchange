@@ -1,0 +1,35 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-newrequest</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="requestsDiv col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <p class="dashboard-title">Create Request For Trade</p>
+          <div class="requestContent">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <a href="{{ trade_data.link }}"  target="_blank">
+                <img src="{{ trade_data.thumbnail }}" alt="book_img">
+              </a>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <p class=""><b>Title:</b> {{ trade_data.title }}</p>
+              <p><b>Authors:</b></p>
+              {% for author in trade_data.authors  %}
+                <p>{{ author }}</p>
+              {% endfor %}</p>
+              <p class=""><b>Owner:</b> {{ trade_user.name }}, <b>Location:</b> {{ trade_user.location }}</p>
+              <form class="" action="/requests/new/{{ book_id }}" method="post">
+                <button type="submit" class="btn btn-success">Make Request</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

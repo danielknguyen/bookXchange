@@ -1,0 +1,53 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-myrequests</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+          <p class="dashboard-title">My Requests For Trade</p>
+          <a href="/dashboard">
+            <button type="button" class="btn btn-info" name="back-btn">Back</button>
+          </a>
+          <div class="myrequest-content">
+            <table width="100%">
+              <tr style="border-bottom: 1px solid black">
+                <th>Book to take</th>
+                <th>Owner</th>
+                <th>Book to give</th>
+                <th>From</th>
+                <th>Status</th>
+              </tr>
+              {% for book in request_data %}
+                <tr style="border-bottom: 1px solid #f1f1f1">
+                  <td class="my-request-td">{{ book.title }}</td>
+                  <td class="my-request-td">{{ book.owner }}</td>
+                  {% if book.book_id_to_give %}
+                    <td>{{ book.title_to_give }}</td>
+                    <td>{{ user.name }}</td>
+                  {% else %}
+                    <td>
+                      <form class="" action="/requests/new/give/for/{{ book._id }}" method="get">
+                        <button class="btn btn-sm btn-danger">Edit Book to give</button>
+                      </form>
+                    </td>
+                    <td></td>
+                  {% endif %}
+                  <td class="my-request-td">
+                    <a href="/dashboard/myrequests/{{ book._id }}">
+                      {{ book.status }}
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
