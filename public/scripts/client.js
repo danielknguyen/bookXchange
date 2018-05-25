@@ -24,5 +24,4 @@ $(document).ready(function() {
   $('.closebtn').on('click', function() {
     closeNav();
   });
-
 });
