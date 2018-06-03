@@ -161,33 +161,21 @@ var routes = function(app, User, books, Book, Request) {
           };
           res.render('books.html', {
             user: req.session.user,
-            allBooks: results,
+            allBooks: new_data,
             error_message: req.flash('error'),
             success_message: req.flash('success')
           });
         });
       });
     } else {
-      promise = new Promise(function(resolve, reject) {
-        Book.find({}, function(err, data) {
-          if (err) {
-            console.log(err);
-          };
-          resolve(data);
-        });
-      });
-
-      promise.then(function isOk(data) {
-        Request.find({ 'user_id': req.session.user.userId }, function(err, request) {
-          if (err) {
-            console.log(err);
-          };
-          res.render('books.html', {
-            allBooks: data,
-            requests: request,
-            error_message: req.flash('error'),
-            success_message: req.flash('success')
-          });
+      Book.find({}, function(err, data) {
+        if (err) {
+          console.log(err);
+        };
+        res.render('books.html', {
+          allBooks: data,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
         });
       });
     };
@@ -285,31 +273,39 @@ var routes = function(app, User, books, Book, Request) {
     });
 
     promise.then(function isOk(myBooksCount) {
-      Request.find({ 'user_id': req.session.user.userId }, function(err, data) {
-        if (err) {
-          console.log(err);
-        };
-        // console.log('requestslength ',data.length);
-        yourTradeReqCount = data.length;
-        req.session.yourTradeReqCount = data.length;
+      var promise2 = new Promise(function(resolve, reject) {
+        Request.find({ 'user_id': req.session.user.userId }, function(err, data) {
+          if (err) {
+            console.log(err);
+          };
+          // console.log('requestslength ',data.length);
+          yourTradeReqCount = data.length;
+          req.session.yourTradeReqCount = data.length;
+          var count = {
+            myBooksCount: myBooksCount,
+            yourTradeReqCount: yourTradeReqCount
+          };
+          resolve(count);
+        });
       });
-    }).then(function() {
-      Request.find({ 'ownerId': req.session.user.userId }, function(err, data) {
-        if (err) {
-          console.log(err);
-        };
-        tradeRequestToYouCount = data.length;
-        req.session.tradeRequestToYouCount = data.length;
-        // console.log('my books count and trade req count ', myBooksCount, yourTradeReqCount);
-        // console.log('this is the trade request count to you ', tradeRequestToYouCount);
+      promise2.then(function isOk(count) {
+        Request.find({ 'ownerId': req.session.user.userId }, function(err, data) {
+          if (err) {
+            console.log(err);
+          };
+          tradeRequestToYouCount = data.length;
+          req.session.tradeRequestToYouCount = data.length;
+          // console.log('my books count and trade req count ', count.myBooksCount, count.yourTradeReqCount);
+          // console.log('this is the trade request count to you ', tradeRequestToYouCount);
 
-        res.render('dashboard.html', {
-          user: req.session.user,
-          my_books_count: myBooksCount,
-          yourTradeReqCount: yourTradeReqCount,
-          trade_requests_to_you_count: tradeRequestToYouCount,
-          error_message: req.flash('error'),
-          success_message: req.flash('success')
+          res.render('dashboard.html', {
+            user: req.session.user,
+            my_books_count: count.myBooksCount,
+            yourTradeReqCount: count.yourTradeReqCount,
+            trade_requests_to_you_count: tradeRequestToYouCount,
+            error_message: req.flash('error'),
+            success_message: req.flash('success')
+          });
         });
       });
     });
@@ -453,10 +449,14 @@ var routes = function(app, User, books, Book, Request) {
     });
   });
   app.get('/requests', function(req, res) {
-    res.render('requests.html', {
-      user: req.session.user,
-      error_message: req.flash('error'),
-      success_message: req.flash('success')
+    Request.find({}, function(err, requests) {
+      console.log(requests);
+      res.render('allrequests.html', {
+        user: req.session.user,
+        data: requests,
+        error_message: req.flash('error'),
+        success_message: req.flash('success')
+      });
     });
   });
   app.get('/requests/new/give/for/:book_id', isLoggedIn, function(req, res) {
@@ -621,6 +621,7 @@ var routes = function(app, User, books, Book, Request) {
       // console.log('this is the book data you want to trade ', data);
       // console.log(data[0]);
       newRequest.user_id = req.session.user.userId;
+      newRequest.requestedBy = req.session.user.name;
       newRequest.title = data[0].title;
       newRequest.ownerId = data[0].user_id;
       newRequest.book_id = data[0]._id;
@@ -632,12 +633,13 @@ var routes = function(app, User, books, Book, Request) {
         if (user) {
           newRequest.owner = user.name;
           // console.log(newRequest);
-          newRequest.save(function(err, savedData) {
+          newRequest.save(function(err) {
             if (err) {
               console.log(err);
             };
+            console.log("This is the new request ", newRequest._id);
             req.flash('success','Select a book to trade for ' + data[0].title);
-            res.redirect('/requests/new/give/for/' + savedData._id);
+            res.redirect('/requests/new/give/for/' + newRequest._id);
           });
         } else {
           console.log(err);
@@ -680,6 +682,35 @@ var routes = function(app, User, books, Book, Request) {
       };
       req.flash('success', results.title + ' was removed from your request list');
       res.redirect('/dashboard/myrequests');
+    });
+  });
+  app.get('/dashboard/traderequeststoyou', isLoggedIn, function(req, res) {
+    Request.find({ 'ownerId': req.session.user.userId }, function(err, requests) {
+      var data = [];
+      // console.log(requests);
+      for (var i = 0; i < requests.length; i++) {
+        // console.log(requests[i].title);
+        // console.log(data.indexOf(requests[i].title));
+        var rswitch = false;
+        for (var j = 0; j < data.length; j++) {
+          data[j].map(function(e) {
+            if (e.title === requests[i].title) {
+              rswitch = true;
+              data[j].push(requests[i]);
+            };
+          });
+        };
+        if (rswitch === false) {
+          data.push([requests[i]]);
+        };
+      };
+      console.log(data);
+      res.render('requests.html', {
+        user: req.session.user,
+        data: data,
+        error_message: req.flash('error'),
+        success_message: req.flash('success')
+      });
     });
   });
   app.get('/users', function(req, res) {
