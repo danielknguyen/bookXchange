@@ -13,6 +13,10 @@ var requestSchema = new Schema({
     type: String,
     trim: true
   },
+  requestedBy: {
+    type: String,
+    trim: true
+  },
   book_id: {
     type: String,
     trim: true

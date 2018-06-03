@@ -1,0 +1,51 @@
+{% extends "template.html" %}
+
+{% block header %}
+  <title>bookXchange-All Requests</title>
+{% endblock %}
+
+{% block content %}
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+      <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
+          <p class="dashboard-title">All Requests</p>
+          <div class="requestForYouContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="allRequestContent col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <table width="100%">
+                <tr style="border-bottom: 1px solid black">
+                  <th>Book to give</th>
+                  <th>Owner</th>
+                  <th>Requested by</th>
+                  <th>Trade for</th>
+                </tr>
+                {% for bookData in data %}
+                  <tr style="border-bottom: 1px solid #f1f1f1">
+                    <td>{{ bookData.title }}</td>
+                    <td>{{ bookData.owner }}</td>
+                    <td>{{ bookData.requestedBy }}</td>
+                    <td>{{ bookData.title_to_give }}</td>
+                  </tr>
+                {% endfor %}
+                <th style="padding:15px;">
+                  {% if user %}
+                  <a href="/books">
+                    <button type="submit" class="btn btn-success">View All Books to Trade</button>
+                  </a>
+                  {% else %}
+                    <a href="/login">
+                      <button  class="btn btn-danger">Login to Make Requests</button>
+                    </a>
+                  {% endif %}
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
