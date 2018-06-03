@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 
 {% block header %}
-  <title>bookXchange-books</title>
+  <title>bookXchange-dashboard</title>
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,7 @@
                   <span>({{ yourTradeReqCount }})</span>
                 </button>
               </a>
-              <a id="dash-tradeReqToyou-btn" href="">
+              <a id="dash-tradeReqToyou-btn" href="/dashboard/traderequeststoyou">
                 <button class="btn btn-secondary col-xs-12 col-sm-12 col-md-12 col-lg-3">
                   Trade requests to you
                   <span>({{ trade_requests_to_you_count }})</span>

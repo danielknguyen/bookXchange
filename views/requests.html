@@ -1,7 +1,7 @@
 {% extends "template.html" %}
 
 {% block header %}
-  <title>bookXchange-books</title>
+  <title>bookXchange-Requests</title>
 {% endblock %}
 
 {% block content %}
@@ -9,7 +9,39 @@
     <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
       <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
-
+          <p class="dashboard-title">Trade Requests to You</p>
+          <a href="/dashboard">
+            <button type="button" class="btn btn-info" name="back-btn">Back</button>
+          </a>
+          <div class="requestForYouContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="requestForYouContent col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <table width="100%">
+                <tr style="border-bottom: 1px solid black">
+                  <th>Book to give</th>
+                  <th>Requested by</th>
+                  <th>Trade for</th>
+                  <th></th>
+                </tr>
+                {% for bookData in data %}
+                  {% for book in bookData %}
+                    <tr style="border-bottom: 1px solid #f1f1f1">
+                      <td>{{ book.title }}</td>
+                      <td>{{ book.requestedBy }}</td>
+                      <td>{{ book.title_to_give }}</td>
+                      <td>
+                        <form class="" action="" method="post" style="display:inline-block;">
+                          <button type="submit" class="btn btn-sm btn-success">Trade</button>
+                        </form>
+                        <form class="" action="" method="post" style="display:inline-block;">
+                          <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                {% endfor %}
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
