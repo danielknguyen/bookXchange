@@ -191,7 +191,7 @@
 button[name="back-btn"] {
   margin: 15px;
 }
-.requestContent, .myrequest-content, .requestForYou-content, .requestForYouContent, .allRequestContent {
+.requestContent, .myrequest-content, .requestForYou-content, .requestForYouContent, .allRequestContent, .usersContainer {
   text-align: center;
   padding: 15px;
 }
