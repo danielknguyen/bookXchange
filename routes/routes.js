@@ -334,6 +334,32 @@ var routes = function(app, User, books, Book, Request) {
       };
     });
   });
+  app.get('/books/user/:user_name/:user_id', function(req, res) {
+    var user_id = req.params.user_id;
+    var user_name = req.params.user_name;
+    Book.find({ 'user_id': user_id }, function(err, books) {
+      if (err) {
+        console.log(err);
+      };
+      if (books.length !== 0) {
+        res.render('userBooks.html', {
+          user: req.session.user,
+          user_name: user_name,
+          myBooks: books,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      } else {
+        res.render('userBooks.html', {
+          user: req.session.user,
+          myBooks:[],
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      }
+    });
+  });
+
   app.get('/dashboard/mybooks', isLoggedIn, function(req, res) {
 
     Book.find({ 'user_id': req.session.user.userId }, function(err, books) {
@@ -714,10 +740,65 @@ var routes = function(app, User, books, Book, Request) {
     });
   });
   app.get('/users', function(req, res) {
-    res.render('users.html', {
-      user: req.session.user,
-      error_message: req.flash('error'),
-      success_message: req.flash('success')
+
+    var promise0 = new Promise(function(resolve, reject) {
+      if (req.session.user) {
+        User.find({ '_id': { $ne: req.session.user.userId }}, function(err, users) {
+          if (err) {
+            console.log(err);
+          };
+          if (users.length === 0) {
+            reject(users);
+          } else {
+            resolve(users)
+          };
+        });
+      } else {
+        User.find({}, function(err, users) {
+          if (err) {
+            console.log(err);
+          };
+          if (users.length === 0) {
+            reject(users);
+          } else {
+            resolve(users)
+          };
+        });
+      }
+    });
+
+    promise0.then(function isOk(users) {
+      // console.log(users);
+      var bookLength = [];
+      var count = 0;
+      for (var i = 0; i < users.length; i++) {
+        Book.find({ 'user_id': users[i]._id }, function(err, book) {
+          bookLength.push({
+            user: book[0].user_id,
+            length: book.length
+          });
+          count++;
+          if (count === users.length) {
+            // console.log(bookLength);
+            for (var j = 0; j < users.length; j++) {
+              // console.log(users[j]._id);
+              bookLength.map(function(e) {
+                if (e.user == users[j]._id) {
+                  users[j].bookLength = e.length;
+                };
+              });
+            };
+            res.render('users.html', {
+              user: req.session.user,
+              data: users,
+              error_message: req.flash('error'),
+              success_message: req.flash('success')
+            });
+          };
+        });
+      };
+    }).catch(function notOk(err) {
+      console.log(err);
     });
   });
 };
