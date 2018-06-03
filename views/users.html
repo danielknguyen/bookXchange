@@ -9,7 +9,33 @@
     <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
       <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
-
+          <p class="dashboard-title">Users</p>
+          <div class="usersContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="usersContent col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              <table width="100%">
+                <tr style="border-bottom: 1px solid black">
+                  <th>User</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Book Count</th>
+                  <th></th>
+                </tr>
+                {% for user in data %}
+                  <tr style="border-bottom: 1px solid #f1f1f1">
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.city }}</td>
+                    <td>{{ user.state }}</td>
+                    <td>{{ user.bookLength }}</td>
+                    <td>
+                      <a href="/books/user/{{ user.name }}/{{ user._id }}">
+                        <button type="button" class="btn btn-info">View Books</button>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
