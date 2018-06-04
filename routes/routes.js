@@ -1,4 +1,4 @@
-var routes = function(app, User, books, Book, Request) {
+var routes = function(app, User, books, Book, Request, HistoryIncomingS, HistoryS) {
 
   var bcrypt = require('bcrypt-nodejs');
 
@@ -677,16 +677,32 @@ var routes = function(app, User, books, Book, Request) {
     });
   });
   app.get('/dashboard/myrequests', isLoggedIn, function(req, res) {
-    Request.find({ 'user_id': req.session.user.userId }, function(err, requests) {
-      // console.log(requests);
-      res.render('myrequests.html', {
-        user: req.session.user,
-        request_data: requests,
-        error_message: req.flash('error'),
-        success_message: req.flash('success')
+
+    var promise0 = new Promise(function(resolve, reject) {
+      Request.find({ 'user_id': req.session.user.userId }, function(err, requests) {
+        // console.log(requests);
+        if (err) {
+          console.log(err);
+        };
+        resolve(requests);
+      });
+    });
+
+    promise0.then(function isOk(data) {
+      HistoryS.find({ 'history_user_id': req.session.user.userId }, function (err, history) {
+        // console.log(history);
+        // console.log(data);
+        res.render('myrequests.html', {
+          user: req.session.user,
+          request_data: data,
+          history: history,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
       });
     });
   });
+
   app.get('/dashboard/myrequests/:request_id', isLoggedIn, function(req, res) {
     var request_id = req.params.request_id;
     Request.find({ '_id': request_id }, function(err, request) {
@@ -706,39 +722,95 @@ var routes = function(app, User, books, Book, Request) {
       if (err) {
         console.log(err);
       };
+      var history = new HistoryS();
+      history.user_id = results.user_id;
+      history.history_user_id = results.user_id;
+      history.book_title = results.title;
+      history.book_id = results.book_id;
+      history.ownerId = results.ownerId;
+      history.owner = results.owner;
+      history.book_id_to_give = results.book_id_to_give;
+      history.title_to_give = results.title_to_give;
+      history.requestedBy = results.requestedBy;
+      history.status = 'Cancelled';
+      // console.log('history ',history);
+
+      history.save(function(err) {
+        if (err) {
+          console.log(err);
+        };
+      });
+
+      console.log('results that was deleted', results)
       req.flash('success', results.title + ' was removed from your request list');
       res.redirect('/dashboard/myrequests');
     });
   });
   app.get('/dashboard/traderequeststoyou', isLoggedIn, function(req, res) {
-    Request.find({ 'ownerId': req.session.user.userId }, function(err, requests) {
-      var data = [];
-      // console.log(requests);
-      for (var i = 0; i < requests.length; i++) {
-        // console.log(requests[i].title);
-        // console.log(data.indexOf(requests[i].title));
-        var rswitch = false;
-        for (var j = 0; j < data.length; j++) {
-          data[j].map(function(e) {
-            if (e.title === requests[i].title) {
-              rswitch = true;
-              data[j].push(requests[i]);
-            };
-          });
+    var promise0 = new Promise(function(resolve, reject) {
+      Request.find({ 'ownerId': req.session.user.userId }, function(err, requests) {
+        var data = [];
+        // console.log(requests);
+        for (var i = 0; i < requests.length; i++) {
+          // console.log(requests[i].title);
+          // console.log(data.indexOf(requests[i].title));
+          var rswitch = false;
+          for (var j = 0; j < data.length; j++) {
+            data[j].map(function(e) {
+              if (e.title === requests[i].title) {
+                rswitch = true;
+                data[j].push(requests[i]);
+              };
+            });
+          };
+          if (rswitch === false) {
+            data.push([requests[i]]);
+          };
         };
-        if (rswitch === false) {
-          data.push([requests[i]]);
-        };
-      };
-      console.log(data);
-      res.render('requests.html', {
-        user: req.session.user,
-        data: data,
-        error_message: req.flash('error'),
-        success_message: req.flash('success')
+        resolve(data);
       });
     });
+
+    promise0.then(function isOk(data) {
+      HistoryIncomingS.find({ 'history_user_id': req.session.user.userId }, function (err, history) {
+        // console.log(history);
+        // console.log(data);
+        res.render('requests.html', {
+          user: req.session.user,
+          data: data,
+          history: history,
+          error_message: req.flash('error'),
+          success_message: req.flash('success')
+        });
+      });
+    });
+
   });
+
+  app.post('/dashboard/traderequeststoyou/remove/:history_id', function(req, res) {
+    var history_id = req.params.history_id;
+    console.log(history_id);
+    HistoryIncomingS.findOneAndRemove({ 'history_user_id': req.session.user.userId, '_id': history_id }, function(err, data) {
+      if (err) {
+        console.log(err);
+      };
+      req.flash('success', 'Request history was removed from your list');
+      res.redirect('/dashboard/traderequeststoyou');
+    });
+  });
+
+  app.post('/dashboard/myrequests/remove/:history_id', function(req, res) {
+    var history_id = req.params.history_id;
+    console.log(history_id);
+    HistoryS.findOneAndRemove({ 'history_user_id': req.session.user.userId, '_id': history_id }, function(err, data) {
+      if (err) {
+        console.log(err);
+      };
+      req.flash('success', 'Request history was removed from your list');
+      res.redirect('/dashboard/myrequests');
+    });
+  });
+
   app.get('/users', function(req, res) {
 
     var promise0 = new Promise(function(resolve, reject) {
@@ -800,6 +872,74 @@ var routes = function(app, User, books, Book, Request) {
     }).catch(function notOk(err) {
       console.log(err);
     });
+  });
+
+  app.post('/dashboard/traderequeststoyou/decline/:book_id/:user_id', function(req, res) {
+    var book_id = req.params.book_id;
+    var user_id = req.params.user_id;
+
+    var promise0 = new Promise(function(resolve, reject) {
+      Request.find({ 'book_id': book_id, 'user_id': user_id, 'ownerId': req.session.user.userId }, function(err, request) {
+        if (err) {
+          console.log(err);
+        };
+        // console.log(request);
+        var data = request;
+        Request.findOneAndRemove({ 'book_id': book_id, 'user_id': user_id, 'ownerId': req.session.user.userId }, function(err, results) {
+          if (err) {
+            console.log(err);
+          };
+          console.log(data[0].title + ' has been removed from trade');
+        });
+        resolve(data);
+      });
+    });
+
+    promise0.then(function isOk(request) {
+      // console.log(request);
+      var incomingHistory = new HistoryIncomingS();
+      var history = new HistoryS();
+      incomingHistory.user_id = request[0].user_id;
+      incomingHistory.history_user_id = request[0].ownerId;
+      incomingHistory.requestedBy = request[0].requestedBy;
+      incomingHistory.book_id = request[0].book_id;
+      incomingHistory.book_title = request[0].title;
+      incomingHistory.ownerId = request[0].ownerId;
+      incomingHistory.owner = request[0].owner;
+      incomingHistory.book_id_to_give = request[0].book_id_to_give;
+      incomingHistory.title_to_give = request[0].title_to_give;
+      incomingHistory.status = 'Declined';
+      // console.log('incoming history ',incomingHistory);
+
+      incomingHistory.save(function(err) {
+        if (err) {
+          console.log(err);
+        };
+      });
+
+      history.user_id = request[0].user_id;
+      history.history_user_id = request[0].user_id;
+      history.book_title = request[0].title;
+      history.book_id = request[0].book_id;
+      history.ownerId = request[0].ownerId;
+      history.owner = request[0].owner;
+      history.book_id_to_give = request[0].book_id_to_give;
+      history.title_to_give = request[0].title_to_give;
+      history.requestedBy = request[0].requestedBy;
+      history.status = 'Declined';
+      // console.log('history ',history);
+
+      history.save(function(err) {
+        if (err) {
+          console.log(err);
+        };
+      });
+
+    }).then(function isOk() {
+      req.flash('success','Declined request completed');
+      res.redirect('/dashboard/traderequeststoyou');
+    });
+
   });
 };
 // middleware to check if user is logged in
