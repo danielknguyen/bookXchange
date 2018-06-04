@@ -18,6 +18,8 @@ var db = require('./libs/db.js');
 var User = require('./models/userSchema.js');
 var Book = require('./models/bookSchema.js');
 var Request = require('./models/requestSchema.js');
+var HistoryS = require('./models/historySchema.js');
+var HistoryIncomingS = require('./models/incomingHistorySchema.js');
 
 // app configuration
 var appConfig = function() {
@@ -86,4 +88,4 @@ var server = app.listen(port, function() {
 var io = socket(server);
 
 // load routes module
-var routes = require('./routes/routes.js')(app, User, books, Book, Request);
+var routes = require('./routes/routes.js')(app, User, books, Book, Request, HistoryS, HistoryIncomingS);
