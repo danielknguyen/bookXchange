@@ -6,49 +6,49 @@ var mongoose = require('mongoose'),
 
 var db = require('../libs/db.js');
 
-var bookSchema = new Schema({
+var incomingSchema = new Schema({
   id: ObjectId,
   user_id: {
     type: String,
-    required: true,
     trim: true
   },
-  volume_id: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  title: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  subtitle: {
+  history_user_id: {
     type: String,
     trim: true
   },
-  authors: [],
-  publisher: {
+  requestedBy: {
     type: String,
     trim: true
   },
-  publishedDate: {
+  book_id: {
     type: String,
     trim: true
   },
-  link: {
+  book_title: {
     type: String,
     trim: true
   },
-  thumbnail: {
+  ownerId: {
     type: String,
     trim: true
   },
-  description: {
+  owner: {
+    type: String,
+    trim: true
+  },
+  book_id_to_give: {
+    type: String,
+    trim: true
+  },
+  title_to_give: {
+    type: String,
+    trim: true
+  },
+  status: {
     type: String,
     trim: true
   }
 });
 
-var Books = db.model('Books', bookSchema);
-module.exports = Books;
+var HistoryIncomingS = db.model('HistoryIncomingS', incomingSchema);
+module.exports = HistoryIncomingS;

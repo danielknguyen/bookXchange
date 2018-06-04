@@ -2,8 +2,7 @@ var mongoose = require('mongoose'),
     // mongoose schema method
     Schema = mongoose.Schema,
     // mongoose objectId
-    ObjectId = Schema.ObjectId,
-    bcrypt = require('bcrypt-nodejs');
+    ObjectId = Schema.ObjectId;
 
 var db = require('../libs/db.js');
 
