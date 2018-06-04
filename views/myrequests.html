@@ -46,6 +46,37 @@
               {% endfor %}
             </table>
           </div>
+          <br><br>
+          <!-- history -->
+          <p class="dashboard-title">History of Trade Requests</p>
+          <div class="myHistory-content">
+            <table width="100%">
+              <tr style="border-bottom: 1px solid black">
+                <th>Book to take</th>
+                <th>Owner</th>
+                <th>Book to give</th>
+                <th>From</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+              {% if history.length !== 0 %}
+                {% for requests in history %}
+                  <tr style="border-bottom: 1px solid #f1f1f1">
+                    <td>{{ requests.book_title }}</td>
+                    <td>{{ requests.owner }}</td>
+                    <td>{{ requests.title_to_give }}</td>
+                    <td>{{ requests.requestedBy }}</td>
+                    <td>{{ requests.status }}</td>
+                    <td>
+                      <form class="" action="/dashboard/myrequests/remove/{{ requests._id }}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">x</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </table>
+          </div>
         </div>
       </div>
     </div>

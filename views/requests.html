@@ -32,7 +32,7 @@
                         <form class="" action="" method="post" style="display:inline-block;">
                           <button type="submit" class="btn btn-sm btn-success">Trade</button>
                         </form>
-                        <form class="" action="" method="post" style="display:inline-block;">
+                        <form class="" action="/dashboard/traderequeststoyou/decline/{{ book.book_id }}/{{ book.user_id }}" method="post" style="display:inline-block;">
                           <button type="submit" class="btn btn-sm btn-danger">Decline</button>
                         </form>
                       </td>
@@ -41,6 +41,35 @@
                 {% endfor %}
               </table>
             </div>
+          </div>
+          <br><br>
+          <!-- history -->
+          <p class="dashboard-title">History of Incoming Requests</p>
+          <div class="incomingRequest-content">
+            <table width="100%">
+              <tr style="border-bottom: 1px solid black">
+                <th>Book to give</th>
+                <th>Requested by</th>
+                <th>Trade for</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+              {% if history.length !== 0 %}
+                {% for history in history %}
+                  <tr style="border-bottom: 1px solid #f1f1f1">
+                    <td>{{ history.book_title }}</td>
+                    <td>{{ history.requestedBy }}</td>
+                    <td>{{ history.title_to_give }}</td>
+                    <td>{{ history.status }}</td>
+                    <td>
+                      <form class="" action="/dashboard/traderequeststoyou/remove/{{ history._id }}" method="post">
+                        <button type="submit" class="btn btn-sm btn-danger">x</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </table>
           </div>
         </div>
       </div>
