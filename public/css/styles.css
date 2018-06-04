@@ -195,6 +195,9 @@ button[name="back-btn"] {
   text-align: center;
   padding: 15px;
 }
+.incomingRequest-content, .myHistory-content {
+  padding: 15px;
+}
 .my-request-td, .request-for-you-td {
   padding: 2px;
 }
