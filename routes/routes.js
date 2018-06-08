@@ -537,7 +537,7 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
       };
     });
   });
-  app.post('/requests/new/give/:request_id/:book_id', function(req, res) {
+  app.post('/requests/new/give/:request_id/:book_id', isLoggedIn, function(req, res) {
     var request_id = req.params.request_id;
     var book_id = req.params.book_id;
 
@@ -787,7 +787,7 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
 
   });
 
-  app.post('/dashboard/traderequeststoyou/remove/:history_id', function(req, res) {
+  app.post('/dashboard/traderequeststoyou/remove/:history_id', isLoggedIn, function(req, res) {
     var history_id = req.params.history_id;
     console.log(history_id);
     HistoryIncomingS.findOneAndRemove({ 'history_user_id': req.session.user.userId, '_id': history_id }, function(err, data) {
@@ -799,7 +799,7 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
     });
   });
 
-  app.post('/dashboard/myrequests/remove/:history_id', function(req, res) {
+  app.post('/dashboard/myrequests/remove/:history_id', isLoggedIn, function(req, res) {
     var history_id = req.params.history_id;
     console.log(history_id);
     HistoryS.findOneAndRemove({ 'history_user_id': req.session.user.userId, '_id': history_id }, function(err, data) {
@@ -874,7 +874,7 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
     });
   });
 
-  app.post('/dashboard/traderequeststoyou/decline/:book_id/:user_id', function(req, res) {
+  app.post('/dashboard/traderequeststoyou/decline/:book_id/:user_id', isLoggedIn, function(req, res) {
     var book_id = req.params.book_id;
     var user_id = req.params.user_id;
 
@@ -938,6 +938,168 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
     }).then(function isOk() {
       req.flash('success','Declined request completed');
       res.redirect('/dashboard/traderequeststoyou');
+    });
+
+  });
+
+  app.post('/dashboard/traderequeststoyou/maketrade/:request_id/:requestedBy_id', function(req, res) {
+    var request_id = req.params.request_id;
+    var requestedBy_id = req.params.requestedBy_id;
+
+    var promise0 = new Promise(function(resolve, reject) {
+      Request.find({ '_id': request_id, 'user_id': requestedBy_id, 'ownerId': req.session.user.userId }, function(err, request) {
+        if (err) {
+          console.log(err);
+        };
+        // console.log(request);
+        var data = request[0];
+        resolve(data);
+      });
+    });
+
+    promise0.then(function isOk(data) {
+
+      Book.findOne({ 'user_id': requestedBy_id, '_id': data.book_id_to_give }, function(err, userBookData) {
+        if (err) {
+          console.log(err);
+        };
+        var promise01 = new Promise(function(resolve, reject) {
+
+          Book.findOne({ 'user_id': req.session.user.userId, '_id': data.book_id }, function(err, ownerBookData) {
+            if (err) {
+              console.log(err);
+            };
+
+            var ownersBook = {
+              volume_id: ownerBookData.volume_id,
+              title: ownerBookData.title,
+              subtitle: ownerBookData.subtitle,
+              authors: ownerBookData.authors,
+              publisher: ownerBookData.publisher,
+              publishedDate: ownerBookData.publishedDate,
+              link: ownerBookData.link,
+              thumbnail: ownerBookData.thumbnail,
+              description: ownerBookData.description,
+            };
+
+            ownerBookData.volume_id = userBookData.volume_id;
+            ownerBookData.title = userBookData.title;
+            ownerBookData.subtitle = userBookData.subtitle;
+            ownerBookData.authors = userBookData.authors;
+            ownerBookData.publisher = userBookData.publisher;
+            ownerBookData.publishedDate = userBookData.publishedDate;
+            ownerBookData.link = userBookData.link;
+            ownerBookData.thumbnail = userBookData.thumbnail;
+            ownerBookData.description = userBookData.description;
+
+            ownerBookData.save(function(err) {
+              if (err) {
+                console.log(err);
+              }
+            });
+            resolve(ownersBook);
+          });
+        });
+
+        promise01.then(function isOk(ownersBook) {
+
+          Book.findOne({ 'user_id': requestedBy_id, '_id': data.book_id_to_give }, function(err, usersBookData) {
+            if (err) {
+              console.log(err);
+            };
+
+            usersBookData.title = ownersBook.title;
+            usersBookData.subtitle = ownersBook.subtitle;
+            usersBookData.authors = ownersBook.authors;
+            usersBookData.publisher = ownersBook.publisher;
+            usersBookData.publishedDate = ownersBook.publishedDate;
+            usersBookData.link = ownersBook.link;
+            usersBookData.thumbnail = ownersBook.thumbnail;
+            usersBookData.description = ownersBook.description;
+
+            usersBookData.save(function(err) {
+              if (err) {
+                console.log(err);
+              };
+            });
+          });
+        });
+      });
+    });
+
+    promise0.then(function isOk(data) {
+      var incomingHistory = new HistoryIncomingS();
+      incomingHistory.user_id = data.user_id;
+      incomingHistory.history_user_id = data.ownerId;
+      incomingHistory.requestedBy = data.requestedBy;
+      incomingHistory.book_id = data.book_id;
+      incomingHistory.book_title = data.title;
+      incomingHistory.ownerId = data.ownerId;
+      incomingHistory.owner = data.owner;
+      incomingHistory.book_id_to_give = data.book_id_to_give;
+      incomingHistory.title_to_give = data.title_to_give;
+      incomingHistory.status = 'Traded';
+
+      incomingHistory.save(function(err) {
+        if (err) {
+          console.log(err);
+        };
+      });
+    });
+
+    promise0.then(function isOk(data) {
+      User.find({ '_id': { $ne: req.session.user.userId } }, function(err, person) {
+        if (err) {
+          console.log(err);
+        }
+        var count = 0;
+        var history
+        person.map(function(user) {
+          Request.find({ 'user_id': user._id, 'ownerId': data.ownerId }, function(err, request) {
+            if (err) {
+              console.log(err);
+            };
+            history = new HistoryS();
+
+            history.user_id = request[0].user_id;
+            history.history_user_id = request[0].user_id;
+            history.book_title = request[0].title;
+            history.book_id = request[0].book_id;
+            history.ownerId = request[0].ownerId;
+            history.owner = request[0].owner;
+            history.book_id_to_give = request[0].book_id_to_give;
+            history.title_to_give = request[0].title_to_give;
+            history.requestedBy = request[0].requestedBy;
+
+            if (history.user_id != requestedBy_id) {
+              history.status = 'Declined';
+            } else {
+              history.status = 'Traded';
+            };
+
+            history.save(function(err) {
+              if (err) {
+                console.log(err);
+              };
+            });
+
+            Request.findOneAndRemove({ 'user_id': user._id, 'ownerId': data.ownerId }, function(err, results) {
+              if (err) {
+                console.log(err);
+              };
+            });
+            count++;
+
+            if (count === person.length) {
+              // console.log('Trade successfully completed');
+              req.flash('success','Trade successfully completed');
+              res.redirect('/dashboard/traderequeststoyou');
+            };
+          });
+
+        });
+
+      });
     });
 
   });

@@ -29,7 +29,7 @@
                       <td>{{ book.requestedBy }}</td>
                       <td>{{ book.title_to_give }}</td>
                       <td>
-                        <form class="" action="" method="post" style="display:inline-block;">
+                        <form class="" action="/dashboard/traderequeststoyou/maketrade/{{ book._id }}/{{ book.user_id }}" method="post" style="display:inline-block;">
                           <button type="submit" class="btn btn-sm btn-success">Trade</button>
                         </form>
                         <form class="" action="/dashboard/traderequeststoyou/decline/{{ book.book_id }}/{{ book.user_id }}" method="post" style="display:inline-block;">
