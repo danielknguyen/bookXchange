@@ -27,20 +27,24 @@
                     <td>{{ bookData.title_to_give }}</td>
                   </tr>
                 {% endfor %}
-                <th style="padding:15px;">
+                <tr style="padding:15px;">
                   {% if user %}
-                  <a href="/books">
-                    <button type="submit" class="btn btn-success">View All Books to Trade</button>
-                  </a>
+                  <td>
+                    <a href="/books">
+                      <button type="submit" class="btn btn-success">View All Books to Trade</button>
+                    </a>
+                  </td>
                   {% else %}
+                  <td>
                     <a href="/login">
                       <button  class="btn btn-danger">Login to Make Requests</button>
                     </a>
+                  </td>
                   {% endif %}
-                </th>
-                <th></th>
-                <th></th>
-                <th></th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
               </table>
             </div>
           </div>

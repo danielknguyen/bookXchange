@@ -476,7 +476,7 @@ var routes = function(app, User, books, Book, Request, HistoryIncomingS, History
   });
   app.get('/requests', function(req, res) {
     Request.find({}, function(err, requests) {
-      console.log(requests);
+      // console.log(requests);
       res.render('allrequests.html', {
         user: req.session.user,
         data: requests,
