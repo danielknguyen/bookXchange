@@ -10,43 +10,41 @@
       <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 nopaddingPanel">
           <p class="dashboard-title">All Requests</p>
-          <div class="requestForYouContainer col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="allRequestContent col-xs-12 col-sm-12 col-md-12 col-lg-12">
-              <table width="100%">
-                <tr style="border-bottom: 1px solid black">
-                  <th>Book to give</th>
-                  <th>Owner</th>
-                  <th>Requested by</th>
-                  <th>Trade for</th>
+          <div class="allRequestContent">
+            <table width="100%">
+              <tr style="border-bottom: 1px solid black">
+                <th>Book to give</th>
+                <th>Owner</th>
+                <th>Requested by</th>
+                <th>Trade for</th>
+              </tr>
+              {% for bookData in data %}
+                <tr style="border-bottom: 1px solid #f1f1f1">
+                  <td>{{ bookData.title }}</td>
+                  <td>{{ bookData.owner }}</td>
+                  <td>{{ bookData.requestedBy }}</td>
+                  <td>{{ bookData.title_to_give }}</td>
                 </tr>
-                {% for bookData in data %}
-                  <tr style="border-bottom: 1px solid #f1f1f1">
-                    <td>{{ bookData.title }}</td>
-                    <td>{{ bookData.owner }}</td>
-                    <td>{{ bookData.requestedBy }}</td>
-                    <td>{{ bookData.title_to_give }}</td>
-                  </tr>
-                {% endfor %}
-                <tr style="padding:15px;">
-                  {% if user %}
-                  <td>
-                    <a href="/books">
-                      <button type="submit" class="btn btn-success">View All Books to Trade</button>
-                    </a>
-                  </td>
-                  {% else %}
-                  <td>
-                    <a href="/login">
-                      <button  class="btn btn-danger">Login to Make Requests</button>
-                    </a>
-                  </td>
-                  {% endif %}
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </table>
-            </div>
+              {% endfor %}
+              <tr style="padding:15px;">
+                {% if user %}
+                <td>
+                  <a href="/books">
+                    <button type="submit" class="btn btn-sm btn-success">View Books</button>
+                  </a>
+                </td>
+                {% else %}
+                <td>
+                  <a href="/login">
+                    <button  class="btn btn-sm btn-danger">Login to Trade</button>
+                  </a>
+                </td>
+                {% endif %}
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
